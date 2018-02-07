@@ -81,78 +81,49 @@ def depthFirstSearch(problem):
   print "Is the start a goal?", problem.isGoalState(problem.getStartState())
   print "Start's successors:", problem.getSuccessors(problem.getStartState())
   """
-  visited = dict()
-  state = problem.getStartState()
-  frontier = util.Stack()
+  Fringe = util.Stack()
+  Visited = []
+  Fringe.push( (problem.getStartState(), []) )
+  Visited.append( problem.getStartState() )
+  
+  while Fringe.isEmpty() == 0:
+      state, actions = Fringe.pop()
+      for next in problem.getSuccessors(state):
+        n_state = next[0]
+        n_direction = next[1]
+        
+        if n_state not in Visited:
+            if problem.isGoalState(n_state):
+                #print 'Find Goal'
+                return actions + [n_direction]
+            
+            else:
+                Fringe.push( (n_state, actions + [n_direction]) )
+                Visited.append( n_state )
 
-  node = {}
-  node["parent"] = None
-  node["action"] = None
-  node["state"] = state
-  frontier.push(node)
-
-  while not frontier.isEmpty():
-    node = frontier.pop()
-    state = node["state"]
-    if visited.has_key(hash(state)):
-      continue
-    visited[hash(state)] = True
-
-    if problem.isGoalState(state) == True:
-      break
-
-    for child in problem.getSuccessors(state):
-      if not visited.has_key(hash(child[0])):
-        sub_node = {}
-        sub_node["parent"] = node
-        sub_node["action"] = child[1]
-        sub_node["state"] = child[0]
-        frontier.push(sub_node)
-
-  actions = []
-  while node["action"] != None:
-    actions.insert(0, node["action"])
-    node = node["parent"]
-
-  return actions
   util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
-  "Search the shallowest nodes in the search tree first. [p 81]"
-  frontier = util.Queue()
-  visited = dict()
+  Fringe = util.Queue()
+  Visited = []
+  Fringe.push( (problem.getStartState(), []) )
+  Visited.append( problem.getStartState() )
+  
+  while Fringe.isEmpty() == 0:
+      state, actions = Fringe.pop()
+      for next in problem.getSuccessors(state):
+        n_state = next[0]
+        n_direction = next[1]
+        
+        if n_state not in Visited:
+            if problem.isGoalState(n_state):
+                #print 'Find Goal'
+                return actions + [n_direction]
+            
+            else:
+                Fringe.push( (n_state, actions + [n_direction]) )
+                Visited.append( n_state )
 
-  state = problem.getStartState()
-  node = {}
-  node["parent"] = None
-  node["action"] = None
-  node["state"] = state
-  frontier.push(node)
-
-  while not frontier.isEmpty():
-    node = frontier.pop()
-    state = node["state"]
-    if visited.has_key(state):
-      continue
-
-    visited[state] = True
-    if problem.isGoalState(state) == True:
-      break
-
-    for child in problem.getSuccessors(state):
-      if child[0] not in visited:
-        sub_node = {}
-        sub_node["parent"] = node
-        sub_node["state"] = child[0]
-        sub_node["action"] = child[1]
-        frontier.push(sub_node)
-
-  actions = []
-  while node["action"] != None:
-    actions.insert(0, node["action"])
-    node = node["parent"]
-
-  return actions
   util.raiseNotDefined()
       
 def uniformCostSearch(problem):
