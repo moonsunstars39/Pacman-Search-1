@@ -89,17 +89,17 @@ def depthFirstSearch(problem):
   while Fringe.isEmpty() == 0:
       state, actions = Fringe.pop()
       for next in problem.getSuccessors(state):
-        n_state = next[0]
-        n_direction = next[1]
+        newstate = next[0]
+        newdirection = next[1]
         
-        if n_state not in Visited:
-            if problem.isGoalState(n_state):
+        if newstate not in Visited:
+            if problem.isGoalState(newstate):
                 #print 'Find Goal'
-                return actions + [n_direction]
+                return actions + [newdirection]
             
             else:
-                Fringe.push( (n_state, actions + [n_direction]) )
-                Visited.append( n_state )
+                Fringe.push( (newstate, actions + [newdirection]) )
+                Visited.append( newstate )
 
   util.raiseNotDefined()
 
@@ -112,17 +112,17 @@ def breadthFirstSearch(problem):
   while Fringe.isEmpty() == 0:
       state, actions = Fringe.pop()
       for next in problem.getSuccessors(state):
-        n_state = next[0]
-        n_direction = next[1]
+        newstate = next[0]
+        newdirection = next[1]
         
         if n_state not in Visited:
-            if problem.isGoalState(n_state):
+            if problem.isGoalState(newstate):
                 #print 'Find Goal'
-                return actions + [n_direction]
+                return actions + [newdirection]
             
             else:
-                Fringe.push( (n_state, actions + [n_direction]) )
-                Visited.append( n_state )
+                Fringe.push( (newstate, actions + [newdirection]) )
+                Visited.append( newstate )
 
   util.raiseNotDefined()
       
