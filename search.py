@@ -55,7 +55,7 @@ class SearchProblem:
      be composed of legal moves
      """
      util.raiseNotDefined()
-           
+     
 
 def tinyMazeSearch(problem):
   """
@@ -81,12 +81,35 @@ def depthFirstSearch(problem):
   print "Is the start a goal?", problem.isGoalState(problem.getStartState())
   print "Start's successors:", problem.getSuccessors(problem.getStartState())
   """
-  Fringe = util.Stack()
+  fringe = util.Stack()
+  visited = []
+  fringe.push( (problem.getStartState(), []) )
+  visited.append( problem.getStartState() )
+  
+  while fringe.isEmpty() == False:
+      state, actions = fringe.pop()
+      for next in problem.getSuccessors(state):
+        newstate = next[0]
+        newdirection = next[1]
+        
+        if newstate not in visited:
+            if problem.isGoalState(newstate):
+                #print 'Find Goal'
+                return actions + [newdirection]
+            
+            else:
+                fringe.push( (newstate, actions + [newdirection]) )
+                visited.append( newstate )
+
+  util.raiseNotDefined()
+
+def breadthFirstSearch(problem):
+  Fringe = util.Queue()
   Visited = []
   Fringe.push( (problem.getStartState(), []) )
   Visited.append( problem.getStartState() )
   
-  while Fringe.isEmpty() == 0:
+  while Fringe.isEmpty() == False:
       state, actions = Fringe.pop()
       for next in problem.getSuccessors(state):
         newstate = next[0]
@@ -102,33 +125,40 @@ def depthFirstSearch(problem):
                 Visited.append( newstate )
 
   util.raiseNotDefined()
-
-def breadthFirstSearch(problem):
-  Fringe = util.Queue()
-  Visited = []
-  Fringe.push( (problem.getStartState(), []) )
-  Visited.append( problem.getStartState() )
-  
-  while Fringe.isEmpty() == 0:
-      state, actions = Fringe.pop()
-      for next in problem.getSuccessors(state):
-        newstate = next[0]
-        newdirection = next[1]
-        
-        if n_state not in Visited:
-            if problem.isGoalState(newstate):
-                #print 'Find Goal'
-                return actions + [newdirection]
-            
-            else:
-                Fringe.push( (newstate, actions + [newdirection]) )
-                Visited.append( newstate )
-
-  util.raiseNotDefined()
       
 def uniformCostSearch(problem):
   "Search the node of least total cost first. "
-  "*** YOUR CODE HERE ***"
+  def update(Frontier, item, priority):
+    for index, (p, c, i) in enumerate(Frontier.heap):
+      if i[0] == item[0]:
+          if p <= priority:
+                break
+          del Frontier.heap[index]
+          Frontier.heap.append((priority, c, item))
+          heapq.heapify(Frontier.heap)
+          break
+    else:
+      Frontier.push(item, priority)
+  
+  Frontier = util.PriorityQueue()
+  Visited = []
+  Frontier.push( (problem.getStartState(), []), 0 )
+  Visited.append( problem.getStartState() )
+
+  while Frontier.isEmpty() == 0:
+    state, actions = Frontier.pop()
+
+    if problem.isGoalState(state):
+      return actions
+
+    if state not in Visited:
+      Visited.append( state )
+
+    for next in problem.getSuccessors(state):
+      n_state = next[0]
+      n_direction = next[1]
+      if n_state not in Visited:
+        update( Frontier, (n_state, actions + [n_direction]), problem.getCostOfActions(actions+[n_direction]) )
   util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
@@ -140,7 +170,27 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
   "Search the node that has the lowest combined cost and heuristic first."
-  "*** YOUR CODE HERE ***"
+  closedset = []
+  pqueue = util.PriorityQueue()
+  start = problem.getStartState()
+  pqueue.push((start, list()), heuristic(start, problem))
+
+  while not pqueue.isEmpty():
+    node, actions = pqueue.pop()
+
+    if problem.isGoalState(node):
+      return actions
+
+    closedset.append(node)
+
+    for pos, dir, cost in problem.getSuccessors(node):
+      if not pos in closedset:
+        new_actions = actions + [dir]
+        score = problem.getCostOfActions(new_actions) + heuristic(pos, problem)
+        pqueue.push( (pos, new_actions), score)
+
+  return []
+
   util.raiseNotDefined()
     
   
