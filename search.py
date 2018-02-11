@@ -155,10 +155,10 @@ def uniformCostSearch(problem):
       Visited.append( state )
 
     for next in problem.getSuccessors(state):
-      n_state = next[0]
-      n_direction = next[1]
-      if n_state not in Visited:
-        update( Frontier, (n_state, actions + [n_direction]), problem.getCostOfActions(actions+[n_direction]) )
+      newstate = next[0]
+      newdirection = next[1]
+      if newstate not in Visited:
+        update( Frontier, (newstate, actions + [newdirection]), problem.getCostOfActions(actions+[newdirection]) )
   util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
