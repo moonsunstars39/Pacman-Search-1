@@ -185,9 +185,9 @@ def aStarSearch(problem, heuristic=nullHeuristic):
 
     for pos, dir, cost in problem.getSuccessors(node):
       if not pos in closedset:
-        new_actions = actions + [dir]
-        score = problem.getCostOfActions(new_actions) + heuristic(pos, problem)
-        pqueue.push( (pos, new_actions), score)
+        newactions = actions + [dir]
+        score = problem.getCostOfActions(newactions) + heuristic(pos, problem)
+        pqueue.push( (pos, newactions), score)
 
   return []
 
