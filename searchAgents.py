@@ -437,7 +437,18 @@ def foodHeuristic(state, problem):
   """
   position, foodGrid = state
   "*** YOUR CODE HERE ***"
-  return 0
+  #Setting heuristic to 0
+  heuristic = 0
+  food = foodGrid.asList()
+  #If there is no food, nothing has to be done
+  if len(food) == 0:
+    return 0
+  #Finds distance from position to food, and if it is longer than the heuristic, it becomes the heuristic
+  for food in food:
+    distance = mazeDistance(position, food, problem.startingGameState)
+    if distance > heuristic:
+      heuristic = distance
+  return heuristic
   
 class ClosestDotSearchAgent(SearchAgent):
   "Search for all food using a sequence of searches"
@@ -465,8 +476,30 @@ class ClosestDotSearchAgent(SearchAgent):
     problem = AnyFoodSearchProblem(gameState)
 
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
-  
+    #Initializing variables
+    fringe = util.Queue()
+    #Creating visited list
+    visited = []
+    #Creating action list
+    action_list = []
+    #getting start position
+    start = problem.getStartState()
+    #pushing starting position into queue
+    fringe.push((start, action_list))
+    #Popping current state into pop
+    while fringe: 
+      state, actions = fringe.pop() 
+      #Appending state to the visited list
+      if not state in visited:
+        visited.append(state)
+        if problem.isGoalState(state):
+          return actions
+        successors = problem.getSuccessors(state)
+        for successor in successors:
+          coordinate, direction, cost = successor
+          fringe.push((coordinate, actions + [direction]))
+          
+     
 class AnyFoodSearchProblem(PositionSearchProblem):
   """
     A search problem for finding a path to any food.
@@ -501,6 +534,21 @@ class AnyFoodSearchProblem(PositionSearchProblem):
     x,y = state
     
     "*** YOUR CODE HERE ***"
+    foods = self.food.asList()
+    if state in foods:
+      isGoal = True
+    else:
+      isGoal = False
+    #print state
+    # For display purposes only
+    if isGoal:
+      self._visitedlist.append(state)
+      import __main__
+      if '_display' in dir(__main__):
+        if 'drawExpandedCells' in dir(__main__._display): #@UndefinedVariable
+          __main__._display.drawExpandedCells(self._visitedlist) #@UndefinedVariable
+       
+    return isGoal 
     util.raiseNotDefined()
 
 ##################

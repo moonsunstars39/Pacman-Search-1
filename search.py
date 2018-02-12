@@ -12,6 +12,7 @@ by Pacman agents (in searchAgents.py).
 """
 
 import util
+import heapq
 
 class SearchProblem:
   """
@@ -81,84 +82,93 @@ def depthFirstSearch(problem):
   print "Is the start a goal?", problem.isGoalState(problem.getStartState())
   print "Start's successors:", problem.getSuccessors(problem.getStartState())
   """
+  #Initializing variables
   fringe = util.Stack()
+  #Creating visited list
   visited = []
-  fringe.push( (problem.getStartState(), []) )
-  visited.append( problem.getStartState() )
+  #Pushing start state to Stack
+  fringe.push((problem.getStartState(), []))
+  #Adding start state to visited list
+  visited.append(problem.getStartState())
   
+  #Popping point from the stack
   while fringe.isEmpty() == False:
       state, actions = fringe.pop()
+      #Getting successor nodes
       for next in problem.getSuccessors(state):
         newstate = next[0]
         newdirection = next[1]
-        
+        #Pushing successor nodes to the stack and appending to visited
         if newstate not in visited:
             if problem.isGoalState(newstate):
-                #print 'Find Goal'
-                return actions + [newdirection]
-            
+                return actions + [newdirection]        
             else:
-                fringe.push( (newstate, actions + [newdirection]) )
-                visited.append( newstate )
+                fringe.push((newstate, actions + [newdirection]))
+                visited.append(newstate)
 
   util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
-  Fringe = util.Queue()
-  Visited = []
-  Fringe.push( (problem.getStartState(), []) )
-  Visited.append( problem.getStartState() )
+  #Initializing variables
+  fringe = util.Queue()
+  #Creating visited list
+  visited = []
+  #Pushing start state to Stack
+  fringe.push((problem.getStartState(), []))
+  #Adding start state to visited list
+  visited.append(problem.getStartState())
   
-  while Fringe.isEmpty() == False:
-      state, actions = Fringe.pop()
+  #Popping point from the queue
+  while fringe.isEmpty() == False:
+      state, actions = fringe.pop()
+      #Getting successor nodes
       for next in problem.getSuccessors(state):
         newstate = next[0]
         newdirection = next[1]
-        
-        if newstate not in Visited:
+        #Pushing successor nodes to the queue and appending to visited
+        if newstate not in visited:
             if problem.isGoalState(newstate):
-                #print 'Find Goal'
-                return actions + [newdirection]
-            
+                return actions + [newdirection]        
             else:
-                Fringe.push( (newstate, actions + [newdirection]) )
-                Visited.append( newstate )
+                fringe.push((newstate, actions + [newdirection]))
+                visited.append(newstate)
 
   util.raiseNotDefined()
       
 def uniformCostSearch(problem):
   "Search the node of least total cost first. "
-  def update(Frontier, item, priority):
-    for index, (p, c, i) in enumerate(Frontier.heap):
+  #Update function to find node of least cost
+  def update(fringe, item, priority):
+    for index, (p, c, i) in enumerate(fringe.heap):
       if i[0] == item[0]:
           if p <= priority:
                 break
-          del Frontier.heap[index]
-          Frontier.heap.append((priority, c, item))
-          heapq.heapify(Frontier.heap)
+          del fringe.heap[index]
+          fringe.heap.append((priority, c, item))
+          heapq.heapify(fringe.heap)
           break
     else:
-      Frontier.push(item, priority)
-  
-  Frontier = util.PriorityQueue()
-  Visited = []
-  Frontier.push( (problem.getStartState(), []), 0 )
-  Visited.append( problem.getStartState() )
-
-  while Frontier.isEmpty() == 0:
-    state, actions = Frontier.pop()
-
+      fringe.push(item, priority)
+  #Initialize variables
+  fringe = util.PriorityQueue()
+  #Creating visited list
+  visited = []
+  fringe.push((problem.getStartState(), []), 0)
+  visited.append(problem.getStartState())
+  #Popping node from fringe
+  while fringe.isEmpty() == False:
+    state, actions = fringe.pop()
     if problem.isGoalState(state):
       return actions
-
-    if state not in Visited:
-      Visited.append( state )
-
+    #Adding current node to visited list
+    if state not in visited:
+      visited.append(state)
+    #Getting successors and finding the one of least cost using update function
     for next in problem.getSuccessors(state):
       newstate = next[0]
       newdirection = next[1]
-      if newstate not in Visited:
-        update( Frontier, (newstate, actions + [newdirection]), problem.getCostOfActions(actions+[newdirection]) )
+      if newstate not in visited:
+        update(fringe, (newstate, actions + [newdirection]), problem.getCostOfActions(actions+[newdirection]))
   util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
@@ -170,24 +180,24 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
   "Search the node that has the lowest combined cost and heuristic first."
-  closedset = []
-  pqueue = util.PriorityQueue()
+  visited = []
+  fringe = util.PriorityQueue()
   start = problem.getStartState()
-  pqueue.push((start, list()), heuristic(start, problem))
+  fringe.push((start, list()), heuristic(start, problem))
 
-  while not pqueue.isEmpty():
-    node, actions = pqueue.pop()
+  while not fringe.isEmpty():
+    state, actions = fringe.pop()
 
-    if problem.isGoalState(node):
+    if problem.isGoalState(state):
       return actions
 
-    closedset.append(node)
+    visited.append(state)
 
-    for pos, dir, cost in problem.getSuccessors(node):
-      if not pos in closedset:
+    for state, dir, cost in problem.getSuccessors(state):
+      if state not in visited:
         newactions = actions + [dir]
-        score = problem.getCostOfActions(newactions) + heuristic(pos, problem)
-        pqueue.push( (pos, newactions), score)
+        score = problem.getCostOfActions(newactions) + heuristic(state, problem)
+        fringe.push( (state, newactions), score)
 
   return []
 
